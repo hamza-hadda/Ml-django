@@ -11,13 +11,10 @@ import seaborn as seabornInstance
 
 
 def linear_regression(name):
-    dataset = pd.read_excel(name, sep=';')
-    dataset.describe()
+    dataset = pd.read_csv(name, sep=';', decimal=',')
 
-    m = dataset.dropna()
-    m.shape
 
-    X = dataset[['Fdw', 'Tdw', 'Ta', 'Thwi', 'Pa', 'RH', 'Frh']]
+    X = dataset[['Fdw', 'Tdw', 'Ta', 'Thwi', 'Pa', 'RH', 'Frl']]
     y = dataset['Thwo']
 
     plt.figure(figsize=(15, 10))
@@ -27,19 +24,12 @@ def linear_regression(name):
     regressor = LinearRegression()
     regressor.fit(X_train, y_train)
 
-    coeff_df = pd.DataFrame(regressor.coef_, X.columns, columns=['Coefficient'])
-
     y_pred = regressor.predict(X_test)
 
-    df = pd.DataFrame({'Actual': y_test, 'Predicted': y_pred})
-    df1 = df.head(25)
-
-    df1.plot(kind='bar', figsize=(10, 8))
-    plt.grid(which='major', linestyle='-', linewidth='0.5', color='green')
-    plt.grid(which='minor', linestyle=':', linewidth='0.5', color='red')
-    plt.show()
-
-    print('Mean Absolute Error:', metrics.mean_absolute_error(y_test, y_pred))
-    print('Mean Squared Error:', metrics.mean_squared_error(y_test, y_pred))
-    print('Root Mean Squared Error:', np.sqrt(metrics.mean_squared_error(y_test, y_pred)))
-    print("R square (R^2):                 %f" % sklearn.metrics.r2_score(y_test, y_pred))
+    metrics_data = {
+        "mean_absolute_error": metrics.mean_absolute_error(y_test, y_pred),
+        "mean_squared_error": metrics.mean_squared_error(y_test, y_pred),
+        "root_mean_squared_error": np.sqrt(metrics.mean_squared_error(y_test, y_pred)),
+        "r_square": sklearn.metrics.r2_score(y_test, y_pred)
+    }
+    return metrics_data
